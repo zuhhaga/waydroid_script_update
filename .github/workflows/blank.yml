@@ -40,6 +40,7 @@ jobs:
         run: |
           la .github/updater
           la .github/workflows
+          la .github/waydroid_script
           
           
       - if: always()
