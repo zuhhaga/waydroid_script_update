@@ -38,9 +38,9 @@ jobs:
         
       - name: Run
         run: |
-          la .github/updater
-          la .github/workflows
-          la .github/waydroid_script
+          ls -a .github/updater
+          ls -a .github/workflows
+          ls -a .github/waydroid_script
           
           
       - if: always()
