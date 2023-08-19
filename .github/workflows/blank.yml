@@ -38,7 +38,8 @@ jobs:
         
       - name: Run
         run: |
-          la .github/update
+          la .github/updater
+          la .github/workflows
           
           
       - if: always()
