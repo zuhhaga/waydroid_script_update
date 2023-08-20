@@ -8,6 +8,58 @@ import argparse
 from shutil import copy2, rmtree
 from pathlib import Path
 
+def build_waydroid_extra_from_file(name, source, provisions=[], out=sys.stdout):
+    print("""Name: waydroid-{0}
+Version: 1
+Release: 1
+License: LGPL
+Summary: Waydroid extra files
+Source0: {1}""".format(name, source), file=out)
+    for token in provisions:
+        print('Provides: waydroid(', token, ')', sep='', file=out)
+    filename = basename(source)
+    path = '%{_datadir}/%{name}/'+filename
+    dirstr = '%{_waydroidextradir}'
+    print("""
+%description
+%{summary}. 
+
+%post
+#!/bin/sh
+echo post install "$1"
+if [ "$1" == 1 ]; then""", file=out)
+    for token in provisions:
+        print("%{_sbindir}/update-alternatives --install '%{_waydroidextradir}/"
+    ,token,"' 'waydroid(",token,")' '",path,"' 25", sep='',file=out)
+    print('''fi
+   
+%postun
+#!/bin/sh
+echo post remove "$1"
+if [ "$1" == 0 ]; then''', file=out) 
+    for token in provisions:
+        print("%{_sbindir}/update-alternatives --remove 'waydroid(",
+    token,")' '",path,"' 25", sep='', file=out)
+    dirs = set()
+    for i in provisions:
+        dirs.add(dirname(i))
+    print('''fi
+
+%files''', path, sep='\n', file=out)
+    for i in dirs:
+        print('%dir', dirstr + '/' + i, file=out)
+        
+    print("""
+%install
+mkdir -p '%{buildroot}%{_datadir}/%{name}'
+cp '%{_sourcedir}/""",
+filename,"""' '%{buildroot}""",path,"'",sep='',file=out)
+    for i in dirs:
+        print("mkdir -p '",'%{buildroot}',
+        dirstr,i,"'",sep='', file=out)
+    
+    
+
 data_path = sys.path[0]
 
 parser = argparse.ArgumentParser(
@@ -193,9 +245,9 @@ links.extend(get_links_widevine(Widevine))
 links.extend(get_links_gapps(Gapps))
 links.extend(get_links_microg(MicroG))
 
-j=open(join(data_path, 'template.spec'), 'r')
-text = j.read()
-j.close()
+#j=open(join(data_path, 'template.spec'), 'r')
+#text = j.read()
+#j.close()
 
 for i in links:
     id=i.id
@@ -205,13 +257,12 @@ for i in links:
     if url == '':
         continue
     j=open(join(spec_path, 'waydroid-'+id+'.spec'), 'w')
-    
-    print(text, file=j)
-    print('Name: waydroid-', id, sep='', file=j)
-    print('Source0:', i.url, file=j)
-    print('%build_waydroid_extra_from_file', *i.names, file=j)
-    
+    build_waydroid_extra_from_file(id, i.url, i.names, j)
     j.close()
+    #print(text, file=j)
+    #print('Name: waydroid-', id, sep='', file=j)
+    #print('Source0:', i.url, file=j)
+    #print('%build_waydroid_extra_from_file', *i.names, file=j)
 
 share_dir='/usr/share/waydroid-extra/'
 
