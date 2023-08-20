@@ -207,7 +207,7 @@ for i in links:
     j=open(join(spec_path, 'waydroid-'+id+'.spec'), 'w')
     
     print(text, file=j)
-    print('%_waydroid_name', id, file=j)
+    print('Name: waydroid-', id, sep='', file=j)
     print('Source0:', i.url, file=j)
     print('%build_waydroid_extra_from_file', *i.names, file=j)
     
