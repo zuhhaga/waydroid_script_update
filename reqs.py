@@ -262,16 +262,16 @@ links.extend(get_links_microg(MicroG))
 #text = j.read()
 #j.close()
 
-for i in links:
-    id=i.id
-    url=i.url
-    if id == 'magisk-delta-apk':
-        continue
-    if url == '':
-        continue
-    j=open(join(spec_path, 'waydroid-'+id+'.spec'), 'w')
-    build_waydroid_extra_from_file(id, i.url, i.names, j)
-    j.close()
+#for i in links:
+  #  id=i.id
+#    url=i.url
+#    if id == 'magisk-delta-apk':
+#        continue
+#    if url == '':
+#        continue
+#    j=open(join(spec_path, 'waydroid-'+id+'.spec'), 'w')
+#    build_waydroid_extra_from_file(id, i.url, i.names, j)
+#    j.close()
     #print(text, file=j)
     #print('Name: waydroid-', id, sep='', file=j)
     #print('Source0:', i.url, file=j)
@@ -313,6 +313,6 @@ j.close()
 
 text = text.replace('%requires', '\n'.join(requirements))
 
-j=open(join(spec_path, 'main', 'waydroid-script.spec'), 'w')
+j=open(join(spec_path, 'waydroid-script.spec'), 'w')
 j.write(text)
 j.close()
