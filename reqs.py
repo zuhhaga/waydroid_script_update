@@ -8,70 +8,70 @@ import argparse
 from shutil import copy2, rmtree
 from pathlib import Path
 
-def build_waydroid_extra_from_file(name, source, provisions=[], out=sys.stdout):
-    print("""Name: waydroid-{0}
-Version: 1
-Release: 1
-License: LGPL
-Summary: Waydroid extra files
-Source0: {1}""".format(name, source), file=out)
-    print("""
-%if %{undefined _waydroidextradir}
-%define _waydroidextradir %{_datadir}/waydroid-extra
-%endif
+# def build_waydroid_extra_from_file(name, source, provisions=[], out=sys.stdout):
+    # print("""Name: waydroid-{0}
+# Version: 1
+# Release: 1
+# License: LGPL
+# Summary: Waydroid extra files
+# Source0: {1}""".format(name, source), file=out)
+    # print("""
+# %if %{undefined _waydroidextradir}
+# %define _waydroidextradir %{_datadir}/waydroid-extra
+# %endif
 
-%if %{undefined _waydroid_unit}
-%define _waydroid_unit() waydroid(%1)
-%endif
+# %if %{undefined _waydroid_unit}
+# %define _waydroid_unit() waydroid(%1)
+# %endif
 
-%if %{undefined _waydroid_provide}
-%define _waydroid_provide() Provides: %{_waydroid_unit %{1}}
-%endif
-    """, file=out)
-    for token in provisions:
-        print('%_waydroid_provide', token, file=out)
-    filename = basename(source)
-    path = '%{_datadir}/%{name}/'+filename
-    dirstr = '%{_waydroidextradir}'
-    print("""
-%description
-%{summary}. 
+# %if %{undefined _waydroid_provide}
+# %define _waydroid_provide() Provides: %{_waydroid_unit %{1}}
+# %endif
+    # """, file=out)
+    # for token in provisions:
+        # print('%_waydroid_provide', token, file=out)
+    # filename = basename(source)
+    # path = '%{_datadir}/%{name}/'+filename
+    # dirstr = '%{_waydroidextradir}'
+    # print("""
+# %description
+# %{summary}. 
 
-%post
-#!/bin/sh
-echo post install "$1"
-if [ "$1" == 1 ]; then""", file=out)
-    for token in provisions:
-        print("%{_sbindir}/update-alternatives --install '%{_waydroidextradir}/"
-    ,token,"' '%{_waydroid_unit ",token,"}' '",path,"' 25", sep='',file=out)
-    print('''fi
+# %post
+# #!/bin/sh
+# echo post install "$1"
+# if [ "$1" == 1 ]; then""", file=out)
+    # for token in provisions:
+        # print("%{_sbindir}/update-alternatives --install '%{_waydroidextradir}/"
+    # ,token,"' '%{_waydroid_unit ",token,"}' '",path,"' 25", sep='',file=out)
+    # print('''fi
    
-%postun
-#!/bin/sh
-echo post remove "$1"
-if [ "$1" == 0 ]; then''', file=out) 
-    for token in provisions:
-        print("%{_sbindir}/update-alternatives --remove '%{_waydroid_unit ",
-    token,"}' '",path,"' 25", sep='', file=out)
-    dirs = set()
-    for i in provisions:
-        while i:
-            i = dirname(i)
-            dirs.add(i)
-    print('''fi
+# %postun
+# #!/bin/sh
+# echo post remove "$1"
+# if [ "$1" == 0 ]; then''', file=out) 
+    # for token in provisions:
+        # print("%{_sbindir}/update-alternatives --remove '%{_waydroid_unit ",
+    # token,"}' '",path,"' 25", sep='', file=out)
+    # dirs = set()
+    # for i in provisions:
+        # while i:
+            # i = dirname(i)
+            # dirs.add(i)
+    # print('''fi
 
-%files''', path, sep='\n', file=out)
-    for i in dirs:
-        print('%dir', dirstr + '/' + i, file=out)
+# %files''', path, sep='\n', file=out)
+    # for i in dirs:
+        # print('%dir', dirstr + '/' + i, file=out)
         
-    print("""
-%install
-mkdir -p '%{buildroot}%{_datadir}/%{name}'
-cp '%{_sourcedir}/""",
-filename,"""' '%{buildroot}""",path,"'",sep='',file=out)
-    for i in dirs:
-        print("mkdir -p '",'%{buildroot}',
-        dirstr,'/',i,"'",sep='', file=out)
+    # print("""
+# %install
+# mkdir -p '%{buildroot}%{_datadir}/%{name}'
+# cp '%{_sourcedir}/""",
+# filename,"""' '%{buildroot}""",path,"'",sep='',file=out)
+    # for i in dirs:
+        # print("mkdir -p '",'%{buildroot}',
+        # dirstr,'/',i,"'",sep='', file=out)
 
 data_path = sys.path[0]
 
@@ -262,20 +262,8 @@ links.extend(get_links_microg(MicroG))
 #text = j.read()
 #j.close()
 
-#for i in links:
-  #  id=i.id
-#    url=i.url
-#    if id == 'magisk-delta-apk':
-#        continue
-#    if url == '':
-#        continue
-#    j=open(join(spec_path, 'waydroid-'+id+'.spec'), 'w')
-#    build_waydroid_extra_from_file(id, i.url, i.names, j)
-#    j.close()
-    #print(text, file=j)
-    #print('Name: waydroid-', id, sep='', file=j)
-    #print('Source0:', i.url, file=j)
-    #print('%build_waydroid_extra_from_file', *i.names, file=j)
+#%global flavor @BUILD_FLAVOR@%{nil}
+#%global ADD_DESCRIPTION_FROM_SUMMARY yes
 
 share_dir='/usr/share/waydroid-extra/'
 
@@ -294,25 +282,45 @@ print('}', file=j)
 
 j.close()
 
-
 j=open(join(main_path, 'requirements.txt'), 'r')
 
-requirements=[]
+reqs=[]
 for i in j.readlines():
     i = i.strip()
     if not (len(i) == 0 or i[0] == '#'):
-        requirements.append(i)
+        reqs.append(i)
 
 j.close()
 
-requirements=list(map(lambda x: 'Requires:       python3dist('+x+')', requirements))
+reqs=list(map(lambda x: 'Requires: python3dist('+x+')', reqs))
 
 j=open(join(data_path, 'waydroid-script.spec'), 'r')
 text = j.read()
 j.close()
 
-text = text.replace('%requires', '\n'.join(requirements))
+text = text.replace('%requires', '\n'.join(reqs))
 
-j=open(join(spec_path, 'waydroid-script.spec'), 'w')
-j.write(text)
+j=open(join(spec_path, 'waydroid-script-extra.spec'), 'w')
+print("""%define ADD_DESCRIPTION_FROM_SUMMARY yes
+%global flavor @BUILD_FLAVOR@%{nil}
+""", file=j)
+
+k = '%if'
+for i in links:
+    id=i.id
+    url=i.url
+    if id == 'magisk-delta-apk':
+        continue
+    if url == '':
+        continue
+    print (k, '"%{flavor}" == "'+id+'" ',file=j)
+    k = '%elif'
+    print ("%build_waydroid_extra_from_file --name", "waydroid-"+id, 
+      '--source', url, *i.names, file=j) 
+
+print('%else')
+print(text)
+print('%endif')
+#    build_waydroid_extra_from_file(id, i.url, i.names, j)
+
 j.close()
