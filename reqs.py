@@ -318,9 +318,9 @@ for i in links:
     print ("%build_waydroid_extra_from_file --name", "waydroid-"+id, 
       '--source', url, *i.names, file=j) 
 
-print('%else')
-print(text)
-print('%endif')
+print('%else', file=j)
+print(text, file=j)
+print('%endif', file=j)
 #    build_waydroid_extra_from_file(id, i.url, i.names, j)
 
 j.close()
