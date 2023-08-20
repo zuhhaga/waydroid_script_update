@@ -15,8 +15,21 @@ Release: 1
 License: LGPL
 Summary: Waydroid extra files
 Source0: {1}""".format(name, source), file=out)
+    print("""
+%if %{undefined _waydroidextradir}
+%define _waydroidextradir %{_datadir}/waydroid-extra
+%endif
+
+%if %{undefined _waydroid_unit}
+%define _waydroid_unit() waydroid(%1)
+%endif
+
+%if %{undefined _waydroid_provide}
+%define _waydroid_provide() Provides: %{_waydroid_unit %{1}}
+%endif
+    """, file=out)
     for token in provisions:
-        print('Provides: waydroid(', token, ')', sep='', file=out)
+        print('%_waydroid_provide', token, file=out)
     filename = basename(source)
     path = '%{_datadir}/%{name}/'+filename
     dirstr = '%{_waydroidextradir}'
@@ -30,7 +43,7 @@ echo post install "$1"
 if [ "$1" == 1 ]; then""", file=out)
     for token in provisions:
         print("%{_sbindir}/update-alternatives --install '%{_waydroidextradir}/"
-    ,token,"' 'waydroid(",token,")' '",path,"' 25", sep='',file=out)
+    ,token,"' '%{_waydroid_unit ",token,"}' '",path,"' 25", sep='',file=out)
     print('''fi
    
 %postun
@@ -38,11 +51,13 @@ if [ "$1" == 1 ]; then""", file=out)
 echo post remove "$1"
 if [ "$1" == 0 ]; then''', file=out) 
     for token in provisions:
-        print("%{_sbindir}/update-alternatives --remove 'waydroid(",
-    token,")' '",path,"' 25", sep='', file=out)
+        print("%{_sbindir}/update-alternatives --remove '%{_waydroid_unit ",
+    token,"}' '",path,"' 25", sep='', file=out)
     dirs = set()
     for i in provisions:
-        dirs.add(dirname(i))
+        while i:
+            i = dirname(i)
+            dirs.add(i)
     print('''fi
 
 %files''', path, sep='\n', file=out)
@@ -56,9 +71,7 @@ cp '%{_sourcedir}/""",
 filename,"""' '%{buildroot}""",path,"'",sep='',file=out)
     for i in dirs:
         print("mkdir -p '",'%{buildroot}',
-        dirstr,i,"'",sep='', file=out)
-    
-    
+        dirstr,'/',i,"'",sep='', file=out)
 
 data_path = sys.path[0]
 
