@@ -1,3 +1,7 @@
+
+%global flavor @BUILD_FLAVOR@%{nil}
+%global ADD_DESCRIPTION_FROM_SUMMARY yes
+%if "%{flavor}" == ""
 %define pypi_name waydroid_script
 %define pypi_version main
 
@@ -92,6 +96,8 @@ ln -s %{pypi_bindir}   %{buildroot}%{pypi_oldbindir}
 %doc README.md
 %{python3_sitelib}/**/*
 %dir %{python3_sitelib}/*
+
+%endif
 
 %changelog
 * Sat Aug 19 2023 lenovo - 0.~~dev0-1
