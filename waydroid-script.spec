@@ -1,6 +1,22 @@
 %define pypi_name waydroid_script
 %define pypi_version main
 
+%ifarch %{arm} 
+%define wayarch armeabi-v7a 
+%endif
+
+%ifarch %{arm64} aarch64 
+%define wayarch arm64-v8a 
+%endif
+
+%ifarch %{x86_64} x86_64 amd64
+%define wayarch x86_64
+%endif
+
+%ifarch %{ix86} 
+%define wayarch x86
+%endif
+
 Name:           python-%{pypi_name}
 Version:        0
 Release:        1%{?dist}
