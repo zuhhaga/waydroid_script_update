@@ -64,7 +64,7 @@ def copydist(data_path, from_path, to_path, src):
         copy2(join(data_path, i), join(to_path, i))
     
     copytree(join(data_path, 'cache'), join(tosrcpath, 'cache'))
-    makedirs(join(to_path, 'specs'), exist_ok=True)
+    makedirs(join(to_path, 'specs', 'main'), exist_ok=True)
     replace(join(tosrcpath, 'tools', 'helper.py'), 'import requests', 
     'requests=__import__("cache.data", fromlist=("cache")).url_cache')
     print('requests_file', file=open(join(tosrcpath, 'requirements.txt'), 'a'))
@@ -249,6 +249,6 @@ j.close()
 
 text = text.replace('%requires', '\n'.join(requirements))
 
-j=open(join(spec_path, 'waydroid-script.spec'), 'w')
+j=open(join(spec_path, 'main', 'waydroid-script.spec'), 'w')
 j.write(text)
 j.close()
