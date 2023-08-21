@@ -130,9 +130,10 @@ source = rpm.expand('%{mainsource}')
 name = 'waydroid-' .. rpm.expand('%{flavor}')
 
 arg={}
-
+len = 0
 for str in string.gmatch(rpm.expand('%{nameprovides}'), "([^%s]+)") do
-    arg[#arg+1] = str
+    len=len + 1
+    arg[len] = str
 end
 
 ind=0
