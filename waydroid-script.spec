@@ -58,7 +58,11 @@ BuildArch: noarch
 Requires: lzip
 Requires: waydroid-script-binary-%{wayarch}
 
-%requires
+%{lua:
+for str in string.gmatch(rpm.expand('%{namerequires}'), "([^%s]+)") do
+    print('Requires: python3dist(' .. str .. ')')
+end
+}
 
 
 %description -n waydroid-script
