@@ -213,7 +213,7 @@ for i in links:
     if url == '':
         continue
     print(repr(i.url), ':', repr(join(share_dir, u)), ',', sep='', file=j)
-    if id == 'magisk-delta-apk':
+    if i.id == 'magisk-delta-apk':
         continue
     copylinks.append(i)
     
