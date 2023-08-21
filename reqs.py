@@ -68,7 +68,15 @@ def copydist(data_path, from_path, to_path, src):
     replace(join(tosrcpath, 'tools', 'helper.py'), 'import requests', 
     'requests=__import__("cache.data", fromlist=("cache")).url_cache')
     print('requests-file', file=open(join(tosrcpath, 'requirements.txt'), 'a'))
-    Path(join(tosrcpath, '__init__.py')).touch()
+    
+    t=open(join(tosrcpath, '__init__.py'), 'w')
+    t.write('''
+from sys import path
+from os.path import dirname
+path.append(dirname(__file__))
+''')
+    t.close()
+    
     for i in ('cache', 'stuff', 'tools'):
         Path(join(tosrcpath, i, '__init__.py')).touch()
 
