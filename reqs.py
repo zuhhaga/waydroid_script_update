@@ -247,7 +247,7 @@ for i in links:
     print(k, '"%{flavor}" == "'+i.id+'"', file=j)
     k = '%elif'
     print('%define nameprovides', *i.names, file=j)
-    print('%define mainsource', i.url, file=j)
+    print('Source0: ', i.url, file=j)
 
 print('''%else
 %global flavor script%{nil}
