@@ -249,10 +249,11 @@ for i in links:
     print('%define nameprovides', *i.names, file=j)
     print('%define mainsource', i.url, file=j)
 
-print('''
-%else
+print('''%else
 %global flavor script%{nil}
-%define namerequires''', *reqs, '\n%endif' file=j)
+%define namerequires''', *reqs, '\n%endif', file=j)
+
+print(open(join(data_path,'waydroid-script.spec'),'r').read(), file=j)
 
 j.close()
 
