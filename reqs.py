@@ -66,7 +66,7 @@ def copydist(data_path, from_path, to_path, src):
     copytree(join(data_path, 'cache'), join(tosrcpath, 'cache'))
     makedirs(join(to_path, 'specs', 'main'), exist_ok=True)
     replace(join(tosrcpath, 'tools', 'helper.py'), 'import requests', 
-    'requests=__import__("cache.data", fromlist=("cache")).url_cache')
+    'requests=__import__("cache.hooks", fromlist=("cache")).default()')
     print('requests-file', file=open(join(tosrcpath, 'requirements.txt'), 'a'))
     
     t=open(join(tosrcpath, '__init__.py'), 'w')
