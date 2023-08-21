@@ -112,9 +112,7 @@ ln -s %{pypi_bindir}   %{buildroot}%{pypi_oldbindir}
 Summary:        Waydroid extra files
 License:        LGPL
 URL:            http://github.com/casualsnek/waydroid-script
-Source0:        %{mainsource}
-
-
+  
 %{lua:
 a,b=rpm.isdefined('_waydroidextradir')
 if (not a) or b then
@@ -131,7 +129,7 @@ if (not a) or (not b) then
   rpm.define('_waydroid_provide() Provides: %{_waydroid_unit %{1}}')
 end
 
-source = rpm.expand('%{mainsource}')
+source = rpm.expand('%{SOURCE0}')
 name = rpm.expand('%{NAME}')
 buildroot = rpm.expand('%{buildroot}')
 filename = source:match("^.*/(.*)$") or source
