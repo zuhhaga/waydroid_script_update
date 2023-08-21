@@ -43,8 +43,6 @@ BuildRequires:  python3dist(setuptools)
 Python Script to add OpenGapps, Magisk, libhoudini translation library and
 libndk translation library to waydroid !
 
-
-
 %package -n     waydroid-script
 Summary: Binaries for waydroid-script package
 BuildArch: noarch
@@ -134,7 +132,13 @@ if (not a) or (not b) then
 end
 
 source = rpm.expand('%{mainsource}')
-name = 'waydroid-' .. rpm.expand('%{flavor}')
+name = rpm.expand('%{NAME}')
+buildroot = rpm.expand('%{buildroot}')
+filename = source:match("^.*/(.*)$") or source
+path = rpm.expand('%{_datadir}/') .. name .. '/' .. filename
+waydroidextradir = rpm.expand('%{_waydroidextradir}')
+alternatives = rpm.expand('%{_sbindir}/update-alternatives')
+buildwaydroidextradir = rpm.expand('%{buildroot}') .. waydroidextradir
 
 arg={}
 len = 0
@@ -168,10 +172,6 @@ while ind < len do
   print(rpm.expand('%_waydroid_provide ' .. arg[ind]) .. nw)
 end
 
-filename = source:match("^.*/(.*)$") or source
-path = rpm.expand('%_datadir/') .. name .. '/' .. filename
-waydroidextradir = rpm.expand('%_waydroidextradir')
-
 if len > 0 then
 print([[
 
@@ -182,8 +182,6 @@ if [ "$1" == 1 ]; then
 ]])
 
 ind = 0
-
-alternatives = rpm.expand('%{_sbindir}/update-alternatives')
 
 if len == 1 then
   ind = ind + 1
@@ -254,9 +252,9 @@ print([[
 ]])
 
 for key, v in pairs(dirs) do
-  print('mkdir -p ' .. waydroidextradir .. key .. nw)
+  print('mkdir -p ' .. buildwaydroidextradir .. key .. nw)
 end
-print("cp '"..rpm.expand('%{_sourcedir}/')..filename.."' " )
+print("cp '"..rpm.expand('%{SOURCE0}') .. "' '" .. path .. "'" )
 
 }
 
