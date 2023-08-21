@@ -303,7 +303,7 @@ text = text.replace('%requires', '\n'.join(reqs))
 j=open(join(spec_path, 'waydroid-script.spec'), 'w')
 print(r"""%define ADD_DESCRIPTION_FROM_SUMMARY yes
 %global flavor @BUILD_FLAVOR@%{nil}
-
+Name: waydroid-script
 %define build_waydroid_extra_from_file(-) %{lua: 
 larg = {}
 lopt = {}
