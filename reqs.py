@@ -233,31 +233,28 @@ for i in j.readlines():
 
 j.close()
 
-reqs=list(map(lambda x: 'Requires: python3dist('+x+')', reqs))
-
 j=open(join(spec_path, 'waydroid-script.spec'), 'w')
-print(r"""
-%global flavor @BUILD_FLAVOR@%{nil}
 
-""", file=j)
-
-k='%if'
-
-for i in links:
-    print(k, '"%{flavor}" == "'+i.id+'"', file=j)
-    k = '%elif'
-    print('%define nameprovides', *i.names, file=j)
-    print('Source0: ', i.url, file=j)
-
-print('''%else
-%global flavor script%{nil}
-%define namerequires''', *reqs, '\n%endif', file=j)
+print('''
+%define namerequires''', *reqs, file=j)
 
 print(open(join(data_path,'waydroid-script.spec'),'r').read(), file=j)
 
 j.close()
 
 
+for i in links:
+    id = i.id
+    j=open(join(spec_path, id+'.spec'), 'w')
+    id='waydroid-'+id
+    print('Name: ', id, '\n',
+    'Source0: ', i.url, 
+'\nBuildRequires: rpm_macro(build_waydroid_extra_from_file)\n',
+    
+    '%build_waydroid_extra_from_file --dscr yes ', 
+      *i.names, file=j)
+    
+    j.close()
 
 j = open(join(spec_path, '_multibuild'), 'w')
 print('<multibuild>', file=j)
