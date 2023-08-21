@@ -254,7 +254,7 @@ print([[
 for key, v in pairs(dirs) do
   print('mkdir -p ' .. buildwaydroidextradir .. key .. nw)
 end
-print("cp '"..rpm.expand('%{SOURCE0}') .. "' '" .. path .. "'" )
+print("cp '"..rpm.expand('%{SOURCE0}') .. "' '" .. buildroot .. path .. "'" )
 
 }
 
