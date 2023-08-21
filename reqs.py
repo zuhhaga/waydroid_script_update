@@ -306,6 +306,7 @@ print("""%define ADD_DESCRIPTION_FROM_SUMMARY yes
 """, file=j)
 
 k = '%if'
+copylinks=[]
 for i in links:
     id=i.id
     url=i.url
@@ -313,10 +314,12 @@ for i in links:
         continue
     if url == '':
         continue
+    copylinks.append(i)
     print (k, '"%{flavor}" == "'+id+'" ',file=j)
     k = '%elif'
     print ("%build_waydroid_extra_from_file --name", "waydroid-"+id, 
       '--source', url, *i.names, file=j) 
+links=copylinks
 
 print('%else', file=j)
 print(text, file=j)
