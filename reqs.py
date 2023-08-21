@@ -301,9 +301,36 @@ j.close()
 text = text.replace('%requires', '\n'.join(reqs))
 
 j=open(join(spec_path, 'waydroid-script.spec'), 'w')
-print(r"""%define ADD_DESCRIPTION_FROM_SUMMARY yes
+print(r"""
+%define ADD_DESCRIPTION_FROM_SUMMARY no
 %global flavor @BUILD_FLAVOR@%{nil}
-Name: waydroid-script
+%define pypi_name waydroid_script
+%define pypi_version main
+
+%ifarch %{arm} 
+%define wayarch armeabi-v7a 
+%endif
+
+%ifarch %{arm64} aarch64 
+%define wayarch arm64-v8a 
+%endif   Script to add gapps and other stuff to waydroid!
+
+%ifarch %{x86_64} x86_64 amd64
+%define wayarch x86_64
+%endif
+
+%ifarch %{ix86} 
+%define wayarch x86
+%endif
+
+%define descr %{expand:
+Python Script to add OpenGapps, Magisk, libhoudini translation library and
+libndk translation library to waydroid !
+}
+
+%description
+%{descr}
+
 %define build_waydroid_extra_from_file(-) %{lua: 
 larg = {}
 lopt = {}
@@ -381,15 +408,15 @@ end
 nw = string.char(10) .. string.char(13)
 
 --if main then
-    print('Name: ' .. name .. nw)
+--    print('Name: ' .. name .. nw)
 --else
 --    print('%package -n ', name, nw)
 --end
 
-print('License: ' .. license .. nw
-   .. 'Summary: ' .. summary .. nw
-   .. 'Version: ' .. version .. nw
-   .. 'Release: ' .. release .. nw)
+--print('License: ' .. license .. nw
+--   .. 'Summary: ' .. summary .. nw
+--   .. 'Version: ' .. version .. nw
+--   .. 'Release: ' .. release .. nw)
 
 ind = 0
 while ind < len do
@@ -527,13 +554,104 @@ for i in links:
     copylinks.append(i)
     print (k, '"%{flavor}" == "'+id+'" ',file=j)
     k = '%elif'
-    print ("%build_waydroid_extra_from_file --name", "waydroid-"+id, 
-      '--source', url, *i.names, file=j) 
+    print ("%define mainsource", url, '\n%define nameprovides' *i.names, file=j) 
 links=copylinks
 
-print('%else', file=j)
-print(text, file=j)
-print('%endif', file=j)
+print('''%else
+%global flavor script%{nil}', file=j)
+%endif
+
+%if "%flavor" == "script"
+  %define main_name %{pypi_name}
+%else
+  %define main_name waydroid-%{flavor}
+%endif
+
+
+Name:           %{main_name}
+Version:        0
+Release:        1%{?dist}
+Summary:        Script to add gapps and other stuff to waydroid!
+License:        MIT
+URL:            http://github.com/casualsnek/waydroid-script
+
+BuildRequires:  python3-devel
+BuildRequires:  python3dist(setuptools)
+
+
+%if "%flavor" == "script"
+Source0:        %{pypi_name}-%{pypi_version}.tar.gz
+
+
+%package -n     waydroid-script-binary-%{wayarch}
+Summary: Binaries for waydroid-script package
+
+%description -n waydroid-script-binary-%{wayarch}
+Binaries for waydroid-script package.
+
+%package -n    waydroid-script
+Summary:         Script to add gapps and other stuff to waydroid!
+BuildArch: noarch
+Requires:     python3-%{pypi_name}
+
+%package -n     python3-%{pypi_name}
+Summary:          Script to add gapps and other stuff to waydroid!
+BuildArch: noarch
+%{?python_provide:%python_provide python3-%{pypi_name}}
+Requires: lzip
+Requires: waydroid-script-binary-%{wayarch}
+
+%requires
+
+
+%description -n waydroid-script
+Python Script to add OpenGapps, Magisk, libhoudini translation library and
+libndk translation library to waydroid !
+
+%description -n python3-%{pypi_name}
+Python Script to add OpenGapps, Magisk, libhoudini translation library and
+libndk translation library to waydroid !
+
+%prep
+%autosetup -n %{pypi_name}-%{pypi_version}
+
+%build
+%py3_build
+%define  pypi_libdir    %{_usr}/lib/%{pypi_name}
+%define  pypi_bindir  %{pypi_libdir}/bin
+%define  pypi_oldbindir  %{python3_sitelib}/%{pypi_name}/bin
+
+%install
+%py3_install
+mkdir -p %{buildroot}%{pypi_bindir}/%{wayarch}/
+mv   %{buildroot}%{pypi_oldbindir}/%{wayarch}/resetprop    %{buildroot}%{pypi_bindir}/%{wayarch}/resetprop
+rm -R %{buildroot}%{pypi_oldbindir}
+ln -s %{pypi_bindir}   %{buildroot}%{pypi_oldbindir}
+
+
+%files -n waydroid-script-binary-%{wayarch}
+%{pypi_bindir}/%{wayarch}/resetprop 
+%dir %{pypi_bindir}/%{wayarch}/
+%dir %{pypi_bindir}/
+%dir %{pypi_libdir}/
+
+%files -n waydroid-script
+%{_bindir}/waydroid-script
+
+%files -n python3-%{pypi_name}
+%license LICENSE
+%doc README.md
+%{python3_sitelib}/**/*
+%dir %{python3_sitelib}/*
+
+
+
+%else
+Source0:        %mainsource
+%{build_waydroid_extra_from_file  --name waydroid-%{flavor}  --source  %{mainsource}  }
+%endif
+
+''', file=j)
 #    build_waydroid_extra_from_file(id, i.url, i.names, j)
 
 j.close()
