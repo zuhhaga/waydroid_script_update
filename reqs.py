@@ -247,11 +247,10 @@ for i in links:
     id = i.id
     j=open(join(spec_path, id+'.spec'), 'w')
     id='waydroid-'+id
-    print('Name: ', id, '\n',
-    'Source0: ', i.url, 
-'\nBuildRequires: rpm_macro(build_waydroid_extra_from_file)\n',
-    
-    '%build_waydroid_extra_from_file --dscr yes ', 
+    print('Name: ', id, '\nSource0: ', i.url, 
+'''
+BuildRequires: rpm_macro(build_waydroid_extra_from_file)
+%build_waydroid_extra_from_file --dscr yes ''', 
       *i.names, file=j)
     
     j.close()
