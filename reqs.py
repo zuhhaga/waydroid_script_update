@@ -300,7 +300,7 @@ j.close()
 
 text = text.replace('%requires', '\n'.join(reqs))
 
-j=open(join(spec_path, 'waydroid-script-extra.spec'), 'w')
+j=open(join(spec_path, 'waydroid-script.spec'), 'w')
 print("""%define ADD_DESCRIPTION_FROM_SUMMARY yes
 %global flavor @BUILD_FLAVOR@%{nil}
 """, file=j)
