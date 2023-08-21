@@ -257,6 +257,7 @@ for i in links:
     id='waydroid-'+id
     print('Name: ', id, '\nSource0: ', i.url, 
 '''
+BuildArch: noarch
 BuildRequires: rpm_macro(build_waydroid_extra_from_file)
 %build_waydroid_extra_from_file --dscr yes ''', 
       *i.names, file=j)
