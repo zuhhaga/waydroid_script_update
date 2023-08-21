@@ -548,7 +548,7 @@ for i in links:
     copylinks.append(i)
     print (k, '"%{flavor}" == "'+id+'" ',file=j)
     k = '%elif'
-    print ("%define mainsource", url, '\n%define nameprovides' *i.names, file=j) 
+    print ("%define mainsource", url, '\n%define nameprovides', *i.names, file=j) 
 links=copylinks
 
 print('''%else
@@ -597,9 +597,6 @@ BuildArch: noarch
 %{?python_provide:%python_provide python3-%{pypi_name}}
 Requires: lzip
 Requires: waydroid-script-binary-%{wayarch}
-
-%requires
-
 
 %description -n waydroid-script
 Python Script to add OpenGapps, Magisk, libhoudini translation library and
