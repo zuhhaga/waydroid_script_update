@@ -324,3 +324,10 @@ print('%endif', file=j)
 #    build_waydroid_extra_from_file(id, i.url, i.names, j)
 
 j.close()
+
+j = open(join(spec_path, '_multibuild'), 'w')
+print('<multibuild>', file=j)
+for i in links:
+    print('<flavor>', i.id, '</flavor>', sep='', file=j)
+print('</multibuild>', file=j)
+j.close()
