@@ -122,6 +122,13 @@ def get_id(a):
     ext = splitext(a.dl_file_name)[1][1:]
     id = id + '-' + ext
     return id
+    
+def joinver(ver, name):
+    name, ext = splitext(name)
+    return name + '.' + ver + ext
+    
+def joinarch(arch, ver, name):
+    return joinver(arch, joinver(ver, name))
 
 def get_links_ndk(a):
     links = a.dl_links
@@ -130,7 +137,7 @@ def get_links_ndk(a):
     id = get_id(a)
     for i in links.items():
         ver=i[0]
-        l = Link((name, join(ver, name)), i[1][0], ver+'-'+id)
+        l = Link((name, joinver(ver, name)), i[1][0], ver+'-'+id)
         ret.append(l)
     return ret
     
@@ -167,7 +174,7 @@ def get_links_gapps(a):
         id = gapps[ver] + '-' + ext
         for u in i[1].items():
             arch=u[0]
-            l = Link((name, join(ver, name), join(arch, ver, name)), 
+            l = Link((name, joinver(ver, name), joinarch(arch, ver, name)), 
                 u[1][0], '-'.join((arch, ver, id)))
             ret.append(l)
     return ret    
@@ -179,7 +186,7 @@ def get_links_widevine(a):
     id = get_id(a)
     for u in links.items():
         for i in u[1].items():
-            l = Link((name, join(i[0], name), join(u[0], i[0], name)), 
+            l = Link((name, joinver(i[0], name), joinarch(u[0], i[0], name)), 
                 i[1][0], '-'.join((u[0], i[0], id)))
             ret.append(l)
     return ret    
