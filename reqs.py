@@ -150,7 +150,7 @@ def get_links_magisk(a):
 
 links=[]
 
-for i in (Ndk, Nodataperm, Houdini, HideStatusBar):
+for i in (Ndk, Houdini, HideStatusBar):
     links.extend(get_links_ndk(i))
     
 for i in (Magisk, Smartdock):
@@ -179,6 +179,20 @@ def get_links_gapps(a):
                 u[1][0], '-'.join((arch, ver, id)))
             ret.append(l)
     return ret    
+
+def get_links_nodataperm(a):
+    links = a.dl_links
+    name = a.dl_file_name
+    ret=[]
+    id = get_id(a)
+    for i in links.items():
+        ver=i[0]
+        for u in i[1].items():
+            arch=u[0]
+            l = Link((name, joinver(ver, name), joinarch(arch, ver, name)), 
+                u[1][0], '-'.join((arch, ver, id)))
+            ret.append(l)
+    return ret    
     
 def get_links_widevine(a):
     links = a.dl_links
@@ -186,9 +200,11 @@ def get_links_widevine(a):
     ret=[]
     id = get_id(a)
     for u in links.items():
+        arch=u[0]
         for i in u[1].items():
-            l = Link((name, joinver(i[0], name), joinarch(u[0], i[0], name)), 
-                i[1][0], '-'.join((u[0], i[0], id)))
+            ver=i[0]
+            l = Link((name, joinver(ver, name), joinarch(arch, ver, name)), 
+                i[1][0], '-'.join((arch, ver, id)))
             ret.append(l)
     return ret    
 
@@ -208,6 +224,7 @@ def get_links_microg(a):
 links.extend(get_links_widevine(Widevine))
 links.extend(get_links_gapps(Gapps))
 links.extend(get_links_microg(MicroG))
+links.extend(get_links_nodataperm(Nodataperm))
 
 #j=open(join(data_path, 'template.spec'), 'r')
 #text = j.read()
